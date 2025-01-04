@@ -13,4 +13,4 @@ clean:
 	rm -f $(NAME)
 	cd srcs; rm -f *.cmx *.o *.cmi;
 
-.PHONY: all clean $(DIRS) $(RUN_TARGETS)
+.PHONY: all clean $(NAME)
