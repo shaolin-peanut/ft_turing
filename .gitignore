@@ -1,0 +1,7 @@
+
+# OCAML 
+*.cmx 
+*.o 
+*.cmi
+
+ft_turing
