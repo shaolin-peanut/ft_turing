@@ -1,16 +1,36 @@
-SRCS := $(shell find srcs -name '*.ml')
+SRC_DIR = srcs
+SRCS := $(SRC_DIR)/types.ml $(SRC_DIR)/parser.ml $(SRC_DIR)/main.ml
+BUILD_DIR = build
 NAME = ft_turing
 PKGS = yojson
 
-all: $(NAME)
+ML_FILES := $(notdir $(SRCS)) # Extract file names from srcs
+OBJS := $(ML_FILES:.ml=.cmx) # Replace .ml with .cmx for object files
+OBJS := $(addprefix $(BUILD_DIR)/, $(OBJS)) # Add build dir prefix
 
-$(NAME):
-	@echo "Compiling $@..."
-	ocamlfind ocamlopt -package $(PKGS) -linkpkg -o $@ $(SRCS)
+all: $(BUILD_DIR) $(BUILD_DIR)/$(NAME)
+
+$(BUILD_DIR):
+	@mkdir -p $(BUILD_DIR)
+
+# Compile source files into the build directory
+$(BUILD_DIR)/%.cmx: srcs/%.ml
+	@echo "Compiling $<..."
+	ocamlfind ocamlopt -package $(PKGS) -linkpkg -I $(BUILD_DIR) -c $< -o $@
+
+# Link the final executable
+$(BUILD_DIR)/$(NAME): $(OBJS)
+	@echo "Linking $@..."
+	ocamlfind ocamlopt -package $(PKGS) -linkpkg -I $(BUILD_DIR) -o $@ $(OBJS)
 
 clean:
 	@echo "Cleaning up..."
-	rm -f $(NAME)
-	cd srcs; rm -f *.cmx *.o *.cmi;
+	rm -rf $(BUILD_DIR)
 
-.PHONY: all clean $(NAME)
+fclean: clean
+	@echo "Removing executable..."
+	rm -f $(NAME)
+
+re: fclean all
+
+.PHONY: all clean fclean re
