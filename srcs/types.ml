@@ -13,4 +13,5 @@ type turing_machine = {
   blank: string;
   states: string list;
   initial: string;
+  finals: string list;
 }

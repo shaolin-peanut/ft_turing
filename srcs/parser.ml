@@ -53,6 +53,21 @@ let check_initial_state initial states =
     failwith "Invalid initial state"
 
 
+(* 
+-> helper function to check if the final states are part of the given states
+ *)
+let check_final_states finals states = 
+  let rec loop = function
+    | [] -> []
+    | hd :: tl ->
+      if List.mem hd states && not (List.mem hd tl) then
+        hd :: loop tl
+      else
+        failwith "Invalid final states"
+  in
+  loop finals
+
+
 
 let extract_json file =
   let name = file |> member "name" |> to_string in
@@ -60,18 +75,20 @@ let extract_json file =
   let blank = file |> member "blank" |> to_string in
   let states = file |> member "states" |> to_list |> List.map to_string in
   let initial = file |> member "initial" |> to_string in
-  (name, alphabet, blank, states, initial)
+  let finals = file |> member "finals" |> to_list |> List.map to_string in
+  (name, alphabet, blank, states, initial, finals)
 
 let parse_json file =
     try
       let json = Yojson.Basic.from_file file in
-      let (name, alphabet, blank, states, initial) = extract_json json in
+      let (name, alphabet, blank, states, initial, finals) = extract_json json in
       {
         name = name;
         alphabet = parse_alphabet alphabet;
         blank = check_blank_char blank alphabet;
         states = check_states states;
         initial = check_initial_state initial states;
+        finals = check_final_states finals states;
       }
     with
     | Yojson.Basic.Util.Type_error (msg, _) ->

@@ -4,4 +4,6 @@
 *.o 
 *.cmi
 
+build/*
+
 ft_turing

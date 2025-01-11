@@ -10,3 +10,4 @@ let () =
   print_endline machine.blank;
   print_endline (String.concat ", " machine.states);
   print_endline machine.initial;
+  print_endline (String.concat ", " machine.finals);

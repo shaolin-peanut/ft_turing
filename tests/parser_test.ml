@@ -192,10 +192,67 @@ let test_check_initial_state () =
     )
   in ()
 
+let test_check_final_states () =
+
+  print_endline "\nTesting check_final_states";
+
+  (* Test 1: Valid final states *)
+  let () =
+    test "Valid final states" (fun () ->
+      let input = ["q0"; "q1"] in
+      let states = ["q0"; "q1"; "q2"] in
+      let result = check_final_states input states in
+      assert (result = ["q0"; "q1"])
+    )
+  in
+
+  (* Test 2: Duplicate final states *)
+  let () =
+    test "Duplicate final states" (fun () ->
+      let input = ["q0"; "q1"; "q0"] in
+      let states = ["q0"; "q1"; "q2"] in
+      try
+        let _ = check_final_states input states in
+        failwith "Expected failure for duplicate final states"
+      with
+      | Failure "Invalid final states" -> ()
+      | _ -> failwith "Wrong error message"
+    )
+  in
+
+  (* Test 3: Invalid final states *)
+  let () =
+    test "Invalid final states" (fun () ->
+      let input = ["q0"; "q3"] in
+      let states = ["q0"; "q1"; "q2"] in
+      try
+        let _ = check_final_states input states in
+        failwith "Expected failure for invalid final states"
+      with
+      | Failure "Invalid final states" -> ()
+      | _ -> failwith "Wrong error message"
+    )
+  in
+
+  (* Test 4: Empty states *)
+  let () =
+    test "Empty states" (fun () ->
+      let input = ["q0"; "q1"] in
+      let states = [] in
+      try
+        let _ = check_final_states input states in
+        failwith "Expected failure for empty states"
+      with
+      | Failure "Invalid final states" -> ()
+      | _ -> failwith "Wrong error message"
+    )
+  in ()
+
     
 let () =
   test_parse_alphabet ();
   test_check_blank_char ();
   test_check_machine_states ();
   test_check_initial_state ();
+  test_check_final_states ();
   run_tests ()
