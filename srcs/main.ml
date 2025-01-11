@@ -6,4 +6,5 @@ let () =
   (* print_endline (Yojson.Basic.pretty_to_string json); *)
   let machine = Parser.parse_json machine_name;
   in print_endline machine.name;
-  print_endline (String.concat ", " machine.alphabet)
+  print_endline (String.concat ", " machine.alphabet);
+  print_endline machine.blank
