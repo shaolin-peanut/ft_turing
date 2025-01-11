@@ -2,6 +2,8 @@ open Test_utils
 open Parser
 
 let test_parse_alphabet () =
+
+  print_endline "\nTesting parse_alphabet";
   (* Test 1: Valid alphabet *)
   let () =
     test "Valid alphabet" (fun () ->
@@ -113,8 +115,43 @@ let test_check_blank_char () =
       | _ -> failwith "Wrong error message"
     )
   in ()
+
+let test_check_machine_states () =
+
+  print_endline "\nTesting check_states";
+
+  (* Test 1: Valid states *)
+  let () =
+    test "Valid states" (fun () ->
+      let input = ["q0"; "q1"; "q2"] in
+      let result = check_states input in
+      assert (result = ["q0"; "q1"; "q2"])
+    )
+  in
+
+  (* Test 2: Duplicate states *)
+  let () =
+    test "Duplicate states" (fun () ->
+      let input = ["q0"; "q1"; "q0"] in
+      try
+        let _ = check_states input in
+        failwith "Expected failure for duplicate states"
+      with
+      | Failure "Invalid states" -> ()
+      | _ -> failwith "Wrong error message"
+    )
+  in
+
+  (* Test 3: Empty states *)
+  let () =
+    test "Empty states" (fun () ->
+      let input = [] in
+      let result = check_states input in
+      assert (result = [])
+    ) in ()
     
 let () =
   test_parse_alphabet ();
   test_check_blank_char ();
+  test_check_machine_states ();
   run_tests ()
