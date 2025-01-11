@@ -149,9 +149,53 @@ let test_check_machine_states () =
       let result = check_states input in
       assert (result = [])
     ) in ()
+
+let test_check_initial_state () =
+
+  print_endline "\nTesting check_initial_state";
+
+  (* Test 1: Valid initial state *)
+  let () =
+    test "Valid initial state" (fun () ->
+      let input = "q0" in
+      let states = ["q0"; "q1"; "q2"] in
+      let result = check_initial_state input states in
+      assert (result = "q0")
+    )
+  in
+
+  (* Test 2: Invalid initial state *)
+  let () =
+    test "Invalid initial state" (fun () ->
+      let input = "q3" in
+      let states = ["q0"; "q1"; "q2"] in
+      try
+        let _ = check_initial_state input states in
+        failwith "Expected failure for invalid initial state"
+      with
+      | Failure "Invalid initial state" -> ()
+      | _ -> failwith "Wrong error message"
+    )
+  in
+
+  (* Test 3: Empty states *)
+  let () =
+    test "Empty states" (fun () ->
+      let input = "q0" in
+      let states = [] in
+      try
+        let _ = check_initial_state input states in
+        failwith "Expected failure for empty states"
+      with
+      | Failure "Invalid initial state" -> ()
+      | _ -> failwith "Wrong error message"
+    )
+  in ()
+
     
 let () =
   test_parse_alphabet ();
   test_check_blank_char ();
   test_check_machine_states ();
+  test_check_initial_state ();
   run_tests ()

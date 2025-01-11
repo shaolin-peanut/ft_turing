@@ -43,29 +43,36 @@ let check_states states =
   in
   loop states
 
+(*
+-> helper function to check if initial state is part of the given states
+*)
+let check_initial_state initial states = 
+  if List.mem initial states then
+    initial
+  else
+    failwith "Invalid initial state"
+
+
 
 let extract_json file =
   let name = file |> member "name" |> to_string in
   let alphabet = file |> member "alphabet" |> to_list |> List.map to_string in
   let blank = file |> member "blank" |> to_string in
   let states = file |> member "states" |> to_list |> List.map to_string in
-  (name, alphabet, blank, states)
+  let initial = file |> member "initial" |> to_string in
+  (name, alphabet, blank, states, initial)
 
 let parse_json file =
     try
       let json = Yojson.Basic.from_file file in
-      let (name, alphabet, blank, states) = extract_json json in
+      let (name, alphabet, blank, states, initial) = extract_json json in
       {
         name = name;
         alphabet = parse_alphabet alphabet;
         blank = check_blank_char blank alphabet;
-        states = check_states states
+        states = check_states states;
+        initial = check_initial_state initial states;
       }
-      (* {
-        name = json |> member "name" |> to_string;
-        alphabet = json |> member "alphabet" |> to_list |> List.map to_string |> parse_alphabet;
-        blank = json |> member "blank" |> to_string |> check_blank_char (json |> member "blank" |> to_string) (json |> member "alphabet" |> to_list |> List.map to_string)
-      } *)
     with
     | Yojson.Basic.Util.Type_error (msg, _) ->
       failwith ("Type error: " ^ msg)

@@ -8,4 +8,5 @@ let () =
   in print_endline machine.name;
   print_endline (String.concat ", " machine.alphabet);
   print_endline machine.blank;
-  print_endline (String.concat ", " machine.states)
+  print_endline (String.concat ", " machine.states);
+  print_endline machine.initial;

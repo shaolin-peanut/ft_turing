@@ -12,4 +12,5 @@ type turing_machine = {
   alphabet: string list;
   blank: string;
   states: string list;
+  initial: string;
 }
