@@ -1,16 +1,49 @@
-SRCS := $(shell find srcs -name '*.ml')
+SRC_DIR = srcs
+SRCS := (SRC_DIR)/transition.ml $(SRC_DIR)/compute.ml $(SRC_DIR)/test_setup.ml 
+TEST_DIR = tests
+TEST_SRCS := $(TEST_DIR)/test_utils.ml $(TEST_DIR)/parser_test.ml
+BUILD_DIR = build
 NAME = ft_turing
 PKGS = yojson
 
-all: $(NAME)
+ML_FILES := $(notdir $(SRCS))
+OBJS := $(ML_FILES:.ml=.cmx)
+OBJS := $(addprefix $(BUILD_DIR)/, $(OBJS))
 
-$(NAME):
-	@echo "Compiling $@..."
-	ocamlfind ocamlopt -package $(PKGS) -linkpkg -o $@ $(SRCS)
+TEST_FILES := $(notdir $(TEST_SRCS))
+TEST_OBJS := $(TEST_FILES:.ml=.cmx)
+TEST_OBJS := $(addprefix $(BUILD_DIR)/, $(TEST_OBJS))
+
+all: $(BUILD_DIR) $(BUILD_DIR)/$(NAME)
+
+test: $(BUILD_DIR) $(BUILD_DIR)/types.cmx $(BUILD_DIR)/parser.cmx $(TEST_OBJS)
+	@echo "Building and running tests..."
+	ocamlfind ocamlopt -package $(PKGS) -linkpkg -I $(BUILD_DIR) -o $(BUILD_DIR)/test_runner $(BUILD_DIR)/types.cmx $(BUILD_DIR)/parser.cmx $(TEST_OBJS)
+	./$(BUILD_DIR)/test_runner
+
+$(BUILD_DIR):
+	@mkdir -p $(BUILD_DIR)
+
+$(BUILD_DIR)/%.cmx: srcs/%.ml
+	@echo "Compiling $<..."
+	ocamlfind ocamlopt -package $(PKGS) -linkpkg -I $(BUILD_DIR) -c $< -o $@
+
+$(BUILD_DIR)/%.cmx: tests/%.ml
+	@echo "Compiling test $<..."
+	ocamlfind ocamlopt -package $(PKGS) -linkpkg -I $(BUILD_DIR) -c $< -o $@
+
+$(BUILD_DIR)/$(NAME): $(OBJS)
+	@echo "Linking $@..."
+	ocamlfind ocamlopt -package $(PKGS) -linkpkg -I $(BUILD_DIR) -o $@ $(OBJS)
 
 clean:
 	@echo "Cleaning up..."
-	rm -f $(NAME)
-	cd srcs; rm -f *.cmx *.o *.cmi;
+	rm -rf $(BUILD_DIR)
 
-.PHONY: all clean $(NAME)
+fclean: clean
+	@echo "Removing executable..."
+	rm -f $(NAME)
+
+re: fclean all
+
+.PHONY: all clean fclean re test
