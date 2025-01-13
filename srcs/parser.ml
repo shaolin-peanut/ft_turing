@@ -67,6 +67,21 @@ let check_final_states finals states =
   in
   loop finals
 
+  let extract_transitions json =
+    let transitions_json = json |> member "transitions" in
+    let transitions_list = transitions_json |> keys |> List.map (fun state ->
+      let trans_list = transitions_json |> member state |> to_list in
+      let transition_list = List.map (fun trans ->
+        {
+          read = trans |> member "read" |> to_string;
+          to_state = trans |> member "to_state" |> to_string;
+          write = trans |> member "write" |> to_string;
+          action = trans |> member "action" |> to_string;
+        }) trans_list
+      in
+      (state, transition_list)
+    ) in
+    transitions_list
 
 
 let extract_json file =
@@ -78,10 +93,40 @@ let extract_json file =
   let finals = file |> member "finals" |> to_list |> List.map to_string in
   (name, alphabet, blank, states, initial, finals)
 
+
+  let extract_states_name transitions =
+    List.map fst transitions 
+
+(*
+-> transition's names shoulde be part of the states 
+ *)
+let check_transitions_names transitions_names states =
+  let rec loop = function
+  | [] -> []
+  | hd :: tl -> 
+    if List.mem hd states then
+      hd :: loop tl
+    else
+      failwith "Transition list does not match state list"
+    in
+    loop transitions_names
+
+
+
+(* 
+-> helper function to parse the transitions
+ *)
+let parse_transitions transitions states alphabet =
+  let transitions_names = extract_states_name transitions in
+  check_transitions_names transitions_names states;
+  transitions
+
+
 let parse_json file =
     try
       let json = Yojson.Basic.from_file file in
       let (name, alphabet, blank, states, initial, finals) = extract_json json in
+      let transitions_json = extract_transitions json in
       {
         name = name;
         alphabet = parse_alphabet alphabet;
@@ -89,6 +134,7 @@ let parse_json file =
         states = check_states states;
         initial = check_initial_state initial states;
         finals = check_final_states finals states;
+        transitions = parse_transitions transitions_json states alphabet
       }
     with
     | Yojson.Basic.Util.Type_error (msg, _) ->

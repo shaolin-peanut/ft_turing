@@ -4,7 +4,7 @@ type transition = {
   read: string;
   to_state: string;
   write: string;
-  direction: string;
+  action: string;
 }
 
 type turing_machine = {
@@ -14,4 +14,5 @@ type turing_machine = {
   states: string list;
   initial: string;
   finals: string list;
+  transitions: (string * transition list) list;
 }
