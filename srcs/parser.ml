@@ -102,16 +102,57 @@ let extract_json file =
  *)
 let check_transitions_names transitions_names states =
   let rec loop = function
-  | [] -> []
+  | [] -> ()
   | hd :: tl -> 
     if List.mem hd states then
-      hd :: loop tl
+      loop tl
     else
-      failwith "Transition list does not match state list"
+      failwith ("Transition '" ^ hd ^ "' does not match any state")
     in
     loop transitions_names
 
+let check_transitions_read_and_write_char transition_list alphabet =
+  let rec loop = function
+  | [] -> () 
+    | hd :: tl ->
+      if List.mem hd.read alphabet && List.mem hd.write alphabet then
+        loop tl
+      else
+        failwith ("Invalid read or write character: read='" ^ hd.read ^ "' write='" ^ hd.write ^ "'")
+  in 
+  loop transition_list
 
+(* 
+-> the to_state of the transition should be part of the states
+  *)
+let check_transitions_to_state transition_list states =
+  let rec loop = function
+  | [] -> ()
+  | hd :: tl ->
+    if List.mem hd.to_state states then
+      loop tl
+    else
+      failwith ("Transition to state '" ^ hd.to_state ^ "' does not match any state")
+  in
+  loop transition_list
+
+
+(* 
+-> the action of the transition should be either "LEFT" or "RIGHT"
+ *)
+  let check_transitions_action transition_list =
+    let valid_actions = ["LEFT"; "RIGHT"] in  (* Define valid action values *)
+    
+    let rec loop = function
+      | [] -> () 
+      | hd :: tl ->
+        if List.mem hd.action valid_actions then
+          loop tl  
+        else
+          failwith ("Invalid action: " ^ hd.action) 
+    
+    in
+    loop transition_list 
 
 (* 
 -> helper function to parse the transitions
@@ -119,6 +160,11 @@ let check_transitions_names transitions_names states =
 let parse_transitions transitions states alphabet =
   let transitions_names = extract_states_name transitions in
   check_transitions_names transitions_names states;
+
+  let transition_list = List.flatten (List.map snd transitions) in
+  check_transitions_read_and_write_char transition_list alphabet;
+  check_transitions_to_state transition_list states;
+  check_transitions_action transition_list;
   transitions
 
 
