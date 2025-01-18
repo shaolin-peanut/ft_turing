@@ -15,7 +15,7 @@ let print_all_transitions transitions_list =
 let () =
   let machine_name = "machines/unary_sub.json" in
   let machine = Parser.parse_json machine_name in
-  Compute.run_machine machine ["-"; "."] 
+  Compute.run_machine machine ["1"; "1"; "1"; "-"; "1"; "1"] 
   |> List.iter  print_endline
 
   
