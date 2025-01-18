@@ -1,3 +1,5 @@
+open Types
+
 type tape = {
   current: string;
   left: string list;
@@ -19,7 +21,6 @@ let hd_or_blank blank = function
 
 (** [shift_tape] shifts the tape according to the direction *)
 let shift_tape blank direction tape =
-  let open Transition in
   match direction with
   | Left -> {
         current = hd_or_blank blank tape.right;
@@ -32,7 +33,7 @@ let shift_tape blank direction tape =
     right = tape.current :: tape.right
     }
 
-let print_tape_and_state tape (transition : Transition.transition) =
+let print_tape_and_state tape (transition : transition) =
   let transition_str = Transition.print_transition transition in
   let left_str = 
     tape.left 
@@ -50,9 +51,7 @@ let print_tape_and_state tape (transition : Transition.transition) =
     
   (** [run_machine] take the config of a turing machine,
   places the input string on the tape and runs the turing machine  *)
-  let run_machine (machine : Transition.turing_machine) (input : string list) : string list =
-    let open Transition in
-    
+  let run_machine (machine : turing_machine) (input : string list) : string list =
     let get_action key =
       machine.transitions
       |> List.filter (fun (k, _) ->
