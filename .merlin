@@ -1,0 +1,3 @@
+B build
+S srcs
+FLG -package yojson

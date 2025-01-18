@@ -1,5 +1,5 @@
 SRC_DIR = srcs
-SRCS := (SRC_DIR)/transition.ml $(SRC_DIR)/compute.ml $(SRC_DIR)/test_setup.ml 
+SRCS := $(SRC_DIR)/transition.ml $(SRC_DIR)/compute.ml $(SRC_DIR)/test_setup.ml $(SRC_DIR)/types.ml $(SRC_DIR)/parser.ml $(SRC_DIR)/main.ml
 TEST_DIR = tests
 TEST_SRCS := $(TEST_DIR)/test_utils.ml $(TEST_DIR)/parser_test.ml
 BUILD_DIR = build
