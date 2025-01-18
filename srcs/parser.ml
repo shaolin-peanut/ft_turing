@@ -1,5 +1,5 @@
-open Yojson.Basic.Util
 open Types
+open Yojson.Basic.Util
 
 (* 
 -> helper function to parse alphabet
@@ -154,6 +154,23 @@ let check_transitions_to_state transition_list states =
     in
     loop transition_list 
 
+    let build_transition_table (transitions : (string * transition_json list) list) =
+      transitions
+      |> List.map (fun (name, transition) : transition list ->
+        transition |> List.map (fun transition ->
+          let move = transition.action |> fun (x) 
+          ->
+            if x = "LEFT" then Left else Right in
+          let transition_key = {state = name; symbol = transition.read} in
+          let transition_action : action = {
+            next_state = transition.to_state; 
+            write = transition.write;
+            move
+            } in
+          (transition_key, transition_action)
+        ))
+        |> List.flatten
+
 (* 
 -> helper function to parse the transitions
  *)
@@ -165,19 +182,20 @@ let parse_transitions transitions states alphabet =
   check_transitions_read_and_write_char transition_list alphabet;
   check_transitions_to_state transition_list states;
   check_transitions_action transition_list;
-  transitions
+  build_transition_table transitions
 
 
-let parse_json file =
+let parse_json file : turing_machine =
     try
       let json = Yojson.Basic.from_file file in
       let (name, alphabet, blank, states, initial, finals) = extract_json json in
+      let _ = check_states states in
       let transitions_json = extract_transitions json in
       {
         name = name;
         alphabet = parse_alphabet alphabet;
         blank = check_blank_char blank alphabet;
-        states = check_states states;
+        (* states = check_states states; *)
         initial = check_initial_state initial states;
         finals = check_final_states finals states;
         transitions = parse_transitions transitions_json states alphabet

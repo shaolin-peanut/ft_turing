@@ -14,11 +14,15 @@ let print_all_transitions transitions_list =
 
 let () =
   let machine_name = "machines/unary_sub.json" in
-  let machine = Parser.parse_json machine_name;
-  in print_endline machine.name;
+  let machine = Parser.parse_json machine_name in
+  Compute.run_machine machine ["-"; "."] 
+  |> List.iter  print_endline
+
+  
+  (* in print_endline machine.name;
   print_endline (String.concat ", " machine.alphabet);
   print_endline machine.blank;
   print_endline (String.concat ", " machine.states);
   print_endline machine.initial;
   print_endline (String.concat ", " machine.finals);
-  print_all_transitions machine.transitions;
+  print_all_transitions machine.transitions; *)
