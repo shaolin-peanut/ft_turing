@@ -1,15 +1,15 @@
 {
-  "name": "context_free",
+  "name": "binary_string_validator",
   "alphabet": ["1", ".", "0", "y", "n"],
   "blank": ".",
-  "states": ["scanright", "scanleft", "check_1", "check_0", "validate_1", "validate_0", "write_yes", "write_no", "HALT"],
+  "states": ["scanright", "scanleft", "check_1", "check_0", "validate_1", "validate_0", "HALT"],
   "initial": "scanright",
   "finals": ["HALT"],
   "transitions": {
     "scanright": [
       {"read": "1", "to_state": "check_0", "write": ".", "action": "RIGHT"},
       {"read": "0", "to_state": "check_1", "write": ".", "action": "RIGHT"},
-      {"read": ".", "to_state": "write_no", "write": "n", "action": "RIGHT"}
+      {"read": ".", "to_state": "HALT", "write": "y", "action": "RIGHT"}
     ],
     "scanleft": [
       {"read": "0", "to_state": "scanleft", "write": "0", "action": "LEFT"},
@@ -28,19 +28,13 @@
     ],
     "validate_1": [
       {"read": "1", "to_state": "scanleft", "write": ".", "action": "LEFT"},
-      {"read": "0", "to_state": "write_no", "write": "n", "action": "LEFT"},
-      {"read": ".", "to_state": "write_yes", "write": "y", "action": "RIGHT"}
+      {"read": "0", "to_state": "HALT", "write": "n", "action": "LEFT"},
+      {"read": ".", "to_state": "HALT", "write": "y", "action": "RIGHT"}
     ],
     "validate_0": [
       {"read": "0", "to_state": "scanleft", "write": ".", "action": "LEFT"},
-      {"read": "1", "to_state": "write_no", "write": "n", "action": "RIGHT"},
-      {"read": ".", "to_state": "write_yes", "write": "y", "action": "RIGHT"}
-    ],
-    "write_yes": [
-      {"read": ".", "to_state": "HALT", "write": ".", "action": "LEFT"}
-    ],
-    "write_no": [
-      {"read": ".", "to_state": "HALT", "write": "n", "action": "LEFT"}
+      {"read": "1", "to_state": "HALT", "write": "y", "action": "RIGHT"},
+      {"read": ".", "to_state": "HALT", "write": "n", "action": "RIGHT"}
     ]
   }
 }
