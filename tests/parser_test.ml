@@ -256,13 +256,3 @@ let () =
   test_check_initial_state ();
   test_check_final_states ();
   run_tests ()
-
-
-
-(* TODO: 
-implement tests for the following functions:
-- check_transitions_read_and_write_char
-- check_transitions_names
-- check_transitions_to_state
-
- *)
