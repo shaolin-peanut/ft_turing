@@ -57,8 +57,7 @@ let print_tape_and_state tape (transition : transition) =
   Printf.sprintf "%s\n%s" tape_str transition_str
 
 
-let print_final_tape tape =
-  let yellow = "\027[33m" in
+let output_final_tape tape =
   let left_str = 
     tape.left 
     |> List.rev
@@ -70,12 +69,12 @@ let print_final_tape tape =
     |> List.map (fun s -> " " ^ s)
     |> String.concat ""
   in
-  let tape_str = yellow ^ left_str ^ tape.current ^ right_str in
-  Printf.sprintf "\n%s%s\n" "final tape: " tape_str
+  let tape_str = left_str ^ tape.current ^ right_str in
+  Printf.sprintf "%s" tape_str
     
   (** [run_machine] take the config of a turing machine,
   places the input string on the tape and runs the turing machine  *)
-  let run_machine (machine : turing_machine) (input : string list) : string list =
+  let run_machine (machine : turing_machine) (input : string list) print_steps : string list =
     let get_action key =
       match machine.transitions |> List.find_opt (fun (k, _) ->
         k.state = key.state && k.symbol = key.symbol) with
@@ -83,14 +82,15 @@ let print_final_tape tape =
       | None -> failwith ("No transition defined for state " ^ key.state ^ " and symbol " ^ key.symbol)
     in
     
-    let rec compute current_state (tape : tape) output =
+    let rec compute current_state (tape : tape) output print_steps =
 
       if halts current_state machine.finals then
-        print_endline (print_final_tape tape) |> fun _ ->
-        List.rev output
+        let final_tape = output_final_tape tape in
+        List.rev (final_tape :: output) 
       else
         let key = {state = current_state; symbol = tape.current} in
         let action = get_action key in
+        if print_steps then
         print_endline (print_tape_and_state tape (key, action));
         let new_output = (print_tape_and_state tape (key, action)) :: output
           in 
@@ -98,11 +98,11 @@ let print_final_tape tape =
           {tape with current = action.write} 
           |> shift_tape machine.blank action.move
         in
-        compute action.next_state next_tape new_output
+        compute action.next_state next_tape new_output print_steps
     in
     
     let starting_tape = match input with
       | [] -> { current = ""; left = []; right = [] }
       | hd::tl -> { current = hd; left = []; right = tl }
     in
-    compute machine.initial starting_tape []
+    compute machine.initial starting_tape [] print_steps
