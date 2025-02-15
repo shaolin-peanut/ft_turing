@@ -1,0 +1,18 @@
+{
+  "name": "is_even",
+  "alphabet": [".", "0", "y", "n"],
+  "blank": ".",
+  "states": ["scanright", "find_pair", "HALT"],
+  "initial": "scanright",
+  "finals": ["HALT"],
+  "transitions": {
+    "scanright": [
+      { "read": "0", "to_state": "find_pair", "write": ".", "action": "RIGHT" },
+      { "read": ".", "to_state": "HALT", "write": "y", "action": "RIGHT" }
+    ],
+    "find_pair": [
+      { "read": "0", "to_state": "scanright", "write": ".", "action": "RIGHT" },
+      { "read": ".", "to_state": "HALT", "write": "n", "action": "RIGHT" }
+    ]
+  }
+}

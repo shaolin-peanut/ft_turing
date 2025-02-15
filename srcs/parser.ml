@@ -1,6 +1,30 @@
 open Types
 open Yojson.Basic.Util
 
+
+
+let check_input_does_not_contain_blank input blank =
+  if List.mem blank input then
+    failwith "Input contains blank character"
+  else
+    ()
+
+let check_input_is_part_of_alphabet input alphabet =
+  let rec loop = function
+    | [] -> ()
+    | hd :: tl ->
+      if List.mem hd alphabet then
+        loop tl
+      else
+        failwith "Invalid input character"
+  in
+  loop input
+
+let parse_input input alphabet blank = 
+  check_input_does_not_contain_blank input blank;
+  check_input_is_part_of_alphabet input alphabet;
+  input
+
 (* 
 -> helper function to parse alphabet
 1. only strings of only one character
@@ -17,7 +41,6 @@ let parse_alphabet alphabet =
         failwith "Invalid alphabet"
   in
   loop alphabet
-
 
 (*
 -> helper function to check if blank character is in alphabet
