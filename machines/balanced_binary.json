@@ -1,5 +1,5 @@
 {
-  "name": "binary_string_validator",
+  "name": "balanced_binary",
   "alphabet": ["1", ".", "0", "y", "n"],
   "blank": ".",
   "states": ["scanright", "scanleft", "check_1", "check_0", "validate_1", "validate_0", "HALT"],
