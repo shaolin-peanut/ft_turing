@@ -7,7 +7,7 @@
   "finals": ["HALT"],
   "transitions": {
     "scanright": [
-      {"read": "1", "to_state": "check_0", "write": ".", "action": "RIGHT"},
+      {"read": "1", "to_state": "check_0", "write": "1", "action": "RIGHT"},
       {"read": "0", "to_state": "check_1", "write": ".", "action": "RIGHT"},
       {"read": ".", "to_state": "HALT", "write": "y", "action": "RIGHT"}
     ],
