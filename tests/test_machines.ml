@@ -139,29 +139,63 @@ let test_run_machine_palindrome () =
 
   test "Test 12" (fun () ->
     run_machine_test "machines/palindrome.json" "0" "y"
-  );
+  )
 
 
 let test_run_machine_is_even () =
   let yellow = "\027[33m" in
   let reset = "\027[0m" in
+  let filename = "machines/balanced_binary.json" in
 
-  print_endline (yellow ^ "\nRunning tests for is_even machine" ^ reset);
-
-  test "Test 1" (fun () ->
-    run_machine_test "machines/is_even.json" "0" "y"
+  print_endline (yellow ^ "\nRunning tests for balanced_binary machine" ^ reset);
+ (* Valid cases (should output 'y') *)
+ test "Test 1 (Valid: 1)" (fun () ->
+  run_machine_test filename "1" "y"
+  );
+  test "Test 2 (Valid: 01)" (fun () ->
+    run_machine_test filename "01" "y"
+  );
+  test "Test 3 (Valid: 0011)" (fun () ->
+    run_machine_test filename "0011" "y"
+  );
+  test "Test 4 (Valid: 000111)" (fun () ->
+    run_machine_test filename "000111" "y"
+  );
+  test "Test 5 (Valid: 00001111)" (fun () ->
+    run_machine_test filename "00001111" "y"
   );
 
-  
+  (* Invalid cases (should output 'n') *)
+  test "Test 6 (Invalid: 11)" (fun () ->
+    run_machine_test filename "11" "n"
+  );
+  test "Test 7 (Invalid: 00011)" (fun () ->
+    run_machine_test filename "00011" "n"
+  );
+  test "Test 8 (Invalid: 0001111)" (fun () ->
+    run_machine_test filename "0001111" "n"
+  );
+  test "Test 9 (Invalid: 10)" (fun () ->
+    run_machine_test filename "10" "n"
+  );
+  test "Test 10 (Invalid: 0)" (fun () ->
+    run_machine_test filename "0" "n"
+  );
+  test "Test 11 (Invalid: empty input)" (fun () ->
+    run_machine_test filename "" "n"
+  );
 
-(* NOTE:
-    - for readability sake the "input" are passed to run_machine_test with space (easier to read and compare with output)
-    but they are parsed before being passed to run_machine_test
-    ex: "1 1 1 - 1 1 1 =" is parsed to ["1"; "1"; "1"; "-"; "1"; "1"; "1"; "="]
- *)
+  test "Test 12 (Invalid: 000010111)" (fun () ->
+    run_machine_test filename "000010111" "n"
+  );
+
+  test "Test 13 (Invalid: 000011111)" (fun () ->
+    run_machine_test filename "000011111" "n"
+  )  
+
 let () =
     test_run_machine_unary_sub (); 
-    (* test_run_machine_unary_add ();   *)
+    (* test_run machine_unary_add ();   *)
     test_run_machine_palindrome();
     test_run_machine_is_even();
     run_tests ()
