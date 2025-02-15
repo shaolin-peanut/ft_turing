@@ -2,7 +2,7 @@
   "name": "balanced_binary",
   "alphabet": ["1", ".", "0", "y", "n"],
   "blank": ".",
-  "states": ["scanright", "scanleft", "check_1", "check_0", "validate_1", "validate_0", "HALT"],
+  "states": ["scanright", "scanleft", "check_1", "check_0", "validate_1", "validate_0", "write_no", "HALT"],
   "initial": "scanright",
   "finals": ["HALT"],
   "transitions": {
@@ -28,12 +28,17 @@
     ],
     "validate_1": [
       {"read": "1", "to_state": "scanleft", "write": ".", "action": "LEFT"},
-      {"read": "0", "to_state": "HALT", "write": "n", "action": "LEFT"},
-      {"read": ".", "to_state": "HALT", "write": "y", "action": "RIGHT"}
+      {"read": "0", "to_state": "write_no", "write": "0", "action": "RIGHT"},
+      {"read": ".", "to_state": "write_no", "write": ".", "action": "RIGHT"}
     ],
     "validate_0": [
-      {"read": "0", "to_state": "scanleft", "write": ".", "action": "LEFT"},
-      {"read": "1", "to_state": "HALT", "write": "y", "action": "RIGHT"},
+      {"read": "0", "to_state": "write_no", "write": "0", "action": "RIGHT"},
+      {"read": "1", "to_state": "write_no", "write": "1", "action": "RIGHT"}, 
+      {"read": ".", "to_state": "HALT", "write": "n", "action": "RIGHT"}
+    ],
+    "write_no": [
+      {"read": "1", "to_state": "write_no", "write": "1", "action": "RIGHT"},
+      {"read": "0", "to_state": "write_no", "write": "0", "action": "RIGHT"},
       {"read": ".", "to_state": "HALT", "write": "n", "action": "RIGHT"}
     ]
   }
