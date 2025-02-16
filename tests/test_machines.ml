@@ -141,16 +141,15 @@ let test_run_machine_palindrome () =
     run_machine_test "machines/palindrome.json" "0" "y"
   )
 
-
-let test_run_machine_is_even () =
+let test_run_machine_balanced_binary () =
   let yellow = "\027[33m" in
   let reset = "\027[0m" in
   let filename = "machines/balanced_binary.json" in
 
   print_endline (yellow ^ "\nRunning tests for balanced_binary machine" ^ reset);
  (* Valid cases (should output 'y') *)
- test "Test 1 (Valid: 1)" (fun () ->
-  run_machine_test filename "1" "y"
+ test "Test 1 (Invalid: 1)" (fun () ->
+  run_machine_test filename "1" "1n"
   );
   test "Test 2 (Valid: 01)" (fun () ->
     run_machine_test filename "01" "y"
@@ -167,35 +166,40 @@ let test_run_machine_is_even () =
 
   (* Invalid cases (should output 'n') *)
   test "Test 6 (Invalid: 11)" (fun () ->
-    run_machine_test filename "11" "n"
+    run_machine_test filename "11" "11n"
   );
   test "Test 7 (Invalid: 00011)" (fun () ->
     run_machine_test filename "00011" "n"
   );
   test "Test 8 (Invalid: 0001111)" (fun () ->
-    run_machine_test filename "0001111" "n"
+    run_machine_test filename "0001111" "1n"
   );
   test "Test 9 (Invalid: 10)" (fun () ->
-    run_machine_test filename "10" "n"
+    run_machine_test filename "10" "10n"
   );
   test "Test 10 (Invalid: 0)" (fun () ->
     run_machine_test filename "0" "n"
   );
-  test "Test 11 (Invalid: empty input)" (fun () ->
-    run_machine_test filename "" "n"
+
+  test "Test 11 (Invalid: 111)" (fun () ->
+    run_machine_test filename "111" "111n"
+  );
+
+  test "Test 12b (Invalid: 1111111)" (fun () ->
+    run_machine_test filename "1111111" "1111111n"
   );
 
   test "Test 12 (Invalid: 000010111)" (fun () ->
-    run_machine_test filename "000010111" "n"
+    run_machine_test filename "000010111" "10n"
   );
 
   test "Test 13 (Invalid: 000011111)" (fun () ->
-    run_machine_test filename "000011111" "n"
-  )  
+    run_machine_test filename "000011111" "1n"
+  )
 
 let () =
     test_run_machine_unary_sub (); 
     (* test_run machine_unary_add ();   *)
     test_run_machine_palindrome();
-    test_run_machine_is_even();
+    test_run_machine_balanced_binary();
     run_tests ()

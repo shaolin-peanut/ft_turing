@@ -14,7 +14,7 @@ TEST_FILES := $(notdir $(TEST_SRCS))
 TEST_OBJS := $(TEST_FILES:.ml=.cmx)
 TEST_OBJS := $(addprefix $(BUILD_DIR)/, $(TEST_OBJS))
 
-all: $(BUILD_DIR) $(BUILD_DIR)/$(NAME)
+all: $(BUILD_DIR) $(NAME)
 
 test: $(BUILD_DIR) $(BUILD_DIR)/types.cmx $(BUILD_DIR)/parser.cmx $(BUILD_DIR)/transition.cmx $(BUILD_DIR)/compute.cmx $(TEST_OBJS) 
 	@echo "Building and running tests..."
@@ -32,7 +32,7 @@ $(BUILD_DIR)/%.cmx: tests/%.ml
 	@echo "Compiling test $<..."
 	ocamlfind ocamlopt -package $(PKGS) -linkpkg -I $(BUILD_DIR) -c $< -o $@
 
-$(BUILD_DIR)/$(NAME): $(OBJS)
+$(NAME): $(OBJS)
 	@echo "Linking $@..."
 	ocamlfind ocamlopt -package $(PKGS) -linkpkg -I $(BUILD_DIR) -o $@ $(OBJS)
 
