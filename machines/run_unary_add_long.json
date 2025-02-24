@@ -1,0 +1,67 @@
+{
+    "name": "run_unary_add",
+    "alphabet": ["S", "E", "A", "H", "1", "+", "=", ".", "_", "X", "R", "L", "#"],
+    "blank": "X",
+    "states": ["find_start", "scan_input", "find_S1", "find_A1", "check_S1", "skip", "HALT"],
+    "initial": "find_start",
+    "finals": ["HALT"],
+    "transitions": {
+        "find_start": [
+            { "read": "S", "to_state": "find_start", "write": "S", "action": "RIGHT" },
+            { "read": "E", "to_state": "find_start", "write": "E", "action": "RIGHT" },
+            { "read": "A", "to_state": "find_start", "write": "A", "action": "RIGHT" },
+            { "read": "H", "to_state": "find_start", "write": "H", "action": "RIGHT" },
+            { "read": "1", "to_state": "find_start", "write": "1", "action": "RIGHT" },
+            { "read": "+", "to_state": "find_start", "write": "+", "action": "RIGHT" },
+            { "read": "=", "to_state": "find_start", "write": "=", "action": "RIGHT" },
+            { "read": ".", "to_state": "find_start", "write": ".", "action": "RIGHT" },
+            { "read": "_", "to_state": "find_start", "write": "_", "action": "RIGHT" },
+            { "read": "X", "to_state": "find_start", "write": "X", "action": "RIGHT" },
+            { "read": "R", "to_state": "find_start", "write": "R", "action": "RIGHT" },
+            { "read": "L", "to_state": "find_start", "write": "L", "action": "RIGHT" },
+            { "read": "=", "to_state": "find_start", "write": "=", "action": "RIGHT" },
+            { "read": ".", "to_state": "find_start", "write": ".", "action": "RIGHT" },
+            { "read": "#", "to_state": "scan_input", "write": "#", "action": "RIGHT" }
+        ],
+        "scan_input": [
+            { "read": "1", "to_state": "find_S1", "write": "1", "action": "LEFT" },
+            { "read": "+", "to_state": "find_A1", "write": "1", "action": "LEFT" }
+        ],
+        "find_S1": [
+            { "read": "1", "to_state": "find_S1", "write": "1", "action": "LEFT" },
+            { "read": "+", "to_state": "find_S1", "write": "+", "action": "LEFT" },
+            { "read": "=", "to_state": "find_S1", "write": "=", "action": "LEFT" },
+            { "read": ".", "to_state": "find_S1", "write": ".", "action": "LEFT" },
+            { "read": "_", "to_state": "find_S1", "write": "_", "action": "LEFT" },
+            { "read": "X", "to_state": "find_S1", "write": "X", "action": "LEFT" },
+            { "read": "R", "to_state": "find_S1", "write": "R", "action": "LEFT" },
+            { "read": "L", "to_state": "find_S1", "write": "L", "action": "LEFT" },
+            { "read": "#", "to_state": "find_S1", "write": "#", "action": "LEFT" },
+            { "read": "H", "to_state": "find_S1", "write": "H", "action": "LEFT" },
+            { "read": "A", "to_state": "find_S1", "write": "A", "action": "LEFT" },
+            { "read": "E", "to_state": "find_S1", "write": "E", "action": "LEFT" },
+            { "read": "S", "to_state": "check_S1", "write": "S", "action": "RIGHT" }
+        ],
+        "find_A1": [
+            { "read": "1", "to_state": "find_A1", "write": "1", "action": "LEFT" },
+            { "read": "+", "to_state": "find_A1", "write": "+", "action": "LEFT" },
+            { "read": "=", "to_state": "find_A1", "write": "=", "action": "LEFT" },
+            { "read": ".", "to_state": "find_A1", "write": ".", "action": "LEFT" },
+            { "read": "_", "to_state": "find_A1", "write": "_", "action": "LEFT" },
+            { "read": "X", "to_state": "find_A1", "write": "X", "action": "LEFT" },
+            { "read": "R", "to_state": "find_A1", "write": "R", "action": "LEFT" },
+            { "read": "L", "to_state": "find_A1", "write": "L", "action": "LEFT" },
+            { "read": "#", "to_state": "find_A1", "write": "#", "action": "LEFT" },
+            { "read": "H", "to_state": "find_A1", "write": "H", "action": "LEFT" },
+            { "read": "E", "to_state": "find_A1", "write": "E", "action": "LEFT" },
+            { "read": "S", "to_state": "find_A1", "write": "S", "action": "LEFT" }
+        ],
+        "check_S1": [
+            { "read": "1", "to_state": "HALT", "write": "1", "action": "LEFT" },
+            { "read": "+", "to_state": "HALT", "write": "+", "action": "LEFT" }
+        ],
+        "skip": [
+            
+        ]
+    }
+}

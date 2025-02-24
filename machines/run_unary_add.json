@@ -1,0 +1,50 @@
+{
+    "name": "run_unary_add",
+    "alphabet": ["1", "2", "3", "4", "5", "6", "A", "B", "C", "D", "E", "F", "#", "+", "=" , ".",  "_" ],
+    "blank": "_",
+    "states": ["find_start", "scan_input", "find_1", "find_2", "find_3", "find_4", "find_5", "find_6",
+     "check_right", "HALT"],
+    "initial": "find_start",
+    "finals": ["HALT"],
+    "transitions": {
+        "find_start": [
+            { "read": "1", "to_state": "find_start", "write": "1", "action": "RIGHT" },
+            { "read": "2", "to_state": "find_start", "write": "2", "action": "RIGHT" },
+            { "read": "3", "to_state": "find_start", "write": "3", "action": "RIGHT" },
+            { "read": "4", "to_state": "find_start", "write": "4", "action": "RIGHT" },
+            { "read": "5", "to_state": "find_start", "write": "5", "action": "RIGHT" },
+            { "read": "6", "to_state": "find_start", "write": "6", "action": "RIGHT" },
+            { "read": "A", "to_state": "find_start", "write": "A", "action": "RIGHT" },
+            { "read": "B", "to_state": "find_start", "write": "B", "action": "RIGHT" },
+            { "read": "C", "to_state": "find_start", "write": "C", "action": "RIGHT" },
+            { "read": "D", "to_state": "find_start", "write": "D", "action": "RIGHT" },
+            { "read": "E", "to_state": "find_start", "write": "E", "action": "RIGHT" },
+            { "read": "F", "to_state": "find_start", "write": "F", "action": "RIGHT" },
+            { "read": "#", "to_state": "scan_input", "write": "#", "action": "RIGHT" }
+        ],
+        "scan_input": [
+            { "read": "1", "to_state": "find_1", "write": "1", "action": "LEFT" }
+        ],
+        "find_1": [
+            { "read": "#", "to_state": "find_1", "write": "#", "action": "LEFT" },
+            { "read": "2", "to_state": "find_1", "write": "2", "action": "LEFT" },
+            { "read": "3", "to_state": "find_1", "write": "3", "action": "LEFT" },
+            { "read": "4", "to_state": "find_1", "write": "4", "action": "LEFT" },
+            { "read": "5", "to_state": "find_1", "write": "5", "action": "LEFT" },
+            { "read": "6", "to_state": "find_1", "write": "6", "action": "LEFT" },
+            { "read": "A", "to_state": "find_1", "write": "A", "action": "LEFT" },
+            { "read": "B", "to_state": "find_1", "write": "B", "action": "LEFT" },
+            { "read": "C", "to_state": "find_1", "write": "C", "action": "LEFT" },
+            { "read": "D", "to_state": "find_1", "write": "D", "action": "LEFT" },
+            { "read": "E", "to_state": "find_1", "write": "E", "action": "LEFT" },
+            { "read": "F", "to_state": "find_1", "write": "F", "action": "LEFT" },
+            { "read": "1", "to_state": "check_right", "write": "1", "action": "RIGHT" }
+        ],
+        "check_right": [
+            { "read": "A", "to_state": "HALT", "write": "A", "action": "LEFT" }
+        ],
+        "apply_A": [
+            
+        ]
+    }
+}
