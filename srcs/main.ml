@@ -44,8 +44,13 @@ let input_list = string_to_list input_string in
 let machine = Parser.parse_json machine_name in
 let input = Parser.parse_input input_list machine.alphabet machine.blank in
 
+Printf.printf "%s\n" (Transition.print_machine machine);
+
 (* Run the machine with the converted input list *)
 let output = Compute.run_machine machine input false  in
   (* Print the output *)
   List.iter (fun s -> Printf.printf "%s\n" s) output
+
+
+
 
