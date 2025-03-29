@@ -1,0 +1,44 @@
+{
+	"name": "utm_5_6",
+	"alphabet": ["f","b","λ","δ","c","d"],
+	"blank": "d",
+	"states": ["u1","u2","u3","u4","u5"],
+	"initial": "u1",
+	"finals": ["u2","u3","u4","u5","u6"],
+	"transitions": {
+		"u1": [
+			{ "read": "f", "to_state": "u1", "write":"b", "action": "RIGHT"},
+			{ "read": "b", "to_state": "u1", "write":"f", "action": "LEFT"},
+			{ "read": "λ", "to_state": "u1", "write":"δ", "action": "RIGHT"},
+			{ "read": "δ", "to_state": "u1", "write":"λ", "action": "LEFT"},
+			{ "read": "c", "to_state": "u1", "write":"c", "action": "LEFT"},
+			{ "read": "d", "to_state": "u1", "write":"f", "action": "LEFT"}
+		],
+		"u2": [
+			{ "read": "b", "to_state": "u2", "write":"b", "action": "LEFT"},
+			{ "read": "λ", "to_state": "u5", "write":"δ", "action": "LEFT"},
+			{ "read": "δ", "to_state": "u2", "write":"δ", "action": "LEFT"},
+			{ "read": "c", "to_state": "u2", "write":"c", "action": "LEFT"},
+			{ "read": "d", "to_state": "u4", "write":"b", "action": "RIGHT"}
+		],
+		"u3": [
+			{ "read": "b", "to_state": "u3", "write":"b", "action": "RIGHT"},
+			{ "read": "δ", "to_state": "u3", "write":"δ", "action": "RIGHT"},
+			{ "read": "c", "to_state": "u3", "write":"c", "action": "RIGHT"},
+			{ "read": "d", "to_state": "u2", "write":"c", "action": "LEFT"}
+		],
+		"u4": [
+			{ "read": "b", "to_state": "u4", "write":"b", "action": "RIGHT"},
+			{ "read": "δ", "to_state": "u4", "write":"δ", "action": "RIGHT"},
+			{ "read": "c", "to_state": "u4", "write":"c", "action": "RIGHT"},
+			{ "read": "d", "to_state": "u2", "write":"b", "action": "LEFT"}
+		],
+		"u5": [
+			{ "read": "b", "to_state": "u5", "write":"d", "action": "RIGHT"},
+			{ "read": "λ", "to_state": "u5", "write":"λ", "action": "RIGHT"},
+			{ "read": "δ", "to_state": "u5", "write":"λ", "action": "RIGHT"},
+			{ "read": "c", "to_state": "u1", "writ":"d", "action": "RIGHT"},
+			{ "read": "d", "to_state": "u3", "write":"b", "action": "RIGHT"}
+		]
+	}
+	
