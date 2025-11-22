@@ -82,7 +82,7 @@ let output_final_tape tape =
       | None -> failwith ("No transition defined for state " ^ key.state ^ " and symbol " ^ key.symbol)
     in
     
-    let rec compute current_state (tape : tape) output print_steps =
+    let rec compute current_state (tape : tape) output print_steps step_count =
 
       if halts current_state machine.finals then
         let final_tape = output_final_tape tape in
@@ -90,19 +90,24 @@ let output_final_tape tape =
       else
         let key = {state = current_state; symbol = tape.current} in
         let action = get_action key in
-        if print_steps then
+       if print_steps && (step_count mod 50000 = 0) then (
+        print_endline (Printf.sprintf "Step %d: State %s" step_count current_state);
         print_endline (print_tape_and_state tape (key, action));
+        flush stdout;
+    );
+        (* if print_steps then
+        print_endline (print_tape_and_state tape (key, action)); *)
         let new_output = (print_tape_and_state tape (key, action)) :: output
           in 
         let next_tape =
           {tape with current = action.write} 
           |> shift_tape machine.blank action.move
         in
-        compute action.next_state next_tape new_output print_steps
+        compute action.next_state next_tape new_output print_steps (step_count + 1)
     in
     
     let starting_tape = match input with
       | [] -> { current = ""; left = []; right = [] }
       | hd::tl -> { current = hd; left = []; right = tl }
     in
-    compute machine.initial starting_tape [] print_steps
+    compute machine.initial starting_tape [] print_steps 0

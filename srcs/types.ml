@@ -45,5 +45,6 @@ type turing_machine = {
   initial : string;
   finals : string list;
   transitions: transition list;
+  states : string list;
 }
 

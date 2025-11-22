@@ -47,7 +47,7 @@ let input = Parser.parse_input input_list machine.alphabet machine.blank in
 Printf.printf "%s\n" (Transition.print_machine machine);
 
 (* Run the machine with the converted input list *)
-let output = Compute.run_machine machine input false  in
+let output = Compute.run_machine machine input true  in
   (* Print the output *)
   List.iter (fun s -> Printf.printf "%s\n" s) output
 

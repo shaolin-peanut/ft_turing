@@ -1,5 +1,5 @@
 SRC_DIR = srcs
-SRCS := $(SRC_DIR)/types.ml  $(SRC_DIR)/parser.ml $(SRC_DIR)/transition.ml $(SRC_DIR)/compute.ml $(SRC_DIR)/main.ml
+SRCS := $(SRC_DIR)/types.ml  $(SRC_DIR)/parser.ml $(SRC_DIR)/transition.ml $(SRC_DIR)/compute.ml $(SRC_DIR)/main.ml $(SRC_DIR)/encoder.ml
 TEST_DIR = tests
 TEST_SRCS := $(TEST_DIR)/test_utils.ml $(TEST_DIR)/parser_test.ml $(TEST_DIR)/test_machines.ml
 BUILD_DIR = build
@@ -20,6 +20,10 @@ test: $(BUILD_DIR) $(BUILD_DIR)/types.cmx $(BUILD_DIR)/parser.cmx $(BUILD_DIR)/t
 	@echo "Building and running tests..."
 	ocamlfind ocamlopt -package $(PKGS) -linkpkg -I $(BUILD_DIR) -o $(BUILD_DIR)/test_runner $(BUILD_DIR)/types.cmx $(BUILD_DIR)/parser.cmx $(BUILD_DIR)/transition.cmx $(BUILD_DIR)/compute.cmx $(TEST_OBJS)
 	./$(BUILD_DIR)/test_runner
+
+# Règle pour compiler l'outil encoder
+encoder: build/types.cmx build/parser.cmx srcs/encoder.ml
+	ocamlfind ocamlopt -package yojson -linkpkg -I build -I srcs -o encoder build/types.cmx build/parser.cmx srcs/encoder.ml
 
 $(BUILD_DIR):
 	@mkdir -p $(BUILD_DIR)
@@ -43,6 +47,7 @@ clean:
 fclean: clean
 	@echo "Removing executable..."
 	rm -f $(NAME)
+	rm -f encoder
 
 re: fclean all
 
