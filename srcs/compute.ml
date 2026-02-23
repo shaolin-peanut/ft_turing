@@ -6,22 +6,19 @@ type tape = {
   right: string list;
 }
 
-(** [halts] check if the symbol is a part of the halting symbols*)
 let halts symbol finals =
   List.mem symbol finals
-  (* finals |> List.mem symbol *)
 
-  let hd_or_blank blank lst =
-    match lst with
-    | [] -> blank
-    | hd :: _ -> hd
-  
-  let tl_or_empty blank lst =
-    match lst with
-    | [] -> [blank]  (* Append blank when reaching the end *)
-    | _ -> List.tl lst
+let hd_or_blank blank lst =
+  match lst with
+  | [] -> blank
+  | hd :: _ -> hd
 
-(** [shift_tape] shifts the tape according to the direction *)
+let tl_or_empty blank lst =
+  match lst with
+  | [] -> [blank] 
+  | _ -> List.tl lst
+
 let shift_tape blank direction tape =
   match direction with
   | Left -> {
@@ -33,81 +30,106 @@ let shift_tape blank direction tape =
       current = hd_or_blank blank tape.right;
       left = tape.current :: tape.left;
       right = tl_or_empty blank tape.right;
-    }
+  }
 
-let print_tape_and_state tape (transition : transition) =
-  let red = "\027[31m" in 
-  let green = "\027[32m" in 
-  let reset = "\027[0m" in 
+(* --- UTILS FOR OUTPUT --- *)
 
+(* Helper to take first N items of a list *)
+let rec take n lst =
+  if n <= 0 then []
+  else match lst with
+  | [] -> []
+  | h :: t -> h :: take (n-1) t
 
-  let transition_str = Transition.print_transition transition in
-  let left_str = 
-    tape.left 
-    |> List.rev
-    |> List.map (fun s -> s ^ " ")
-    |> String.concat ""
-  in
-  let right_str =
-    tape.right
-    |> List.map (fun s -> " " ^ s)
-    |> String.concat ""
-  in
-  let tape_str = red ^ left_str ^ green ^ "[" ^ tape.current ^ "]" ^ red ^ right_str ^ reset in
-  Printf.sprintf "%s\n%s" tape_str transition_str
-
-
+(* Full Tape (Slow, Use only for final result) *)
 let output_final_tape tape =
-  let left_str = 
-    tape.left 
-    |> List.rev
-    |> List.map (fun s -> s ^ " ")
-    |> String.concat ""
+  let buf = Buffer.create 1000 in
+  let rec add_left = function
+    | [] -> ()
+    | h :: t -> add_left t; Buffer.add_string buf h; Buffer.add_char buf ' '
   in
-  let right_str =
-    tape.right
-    |> List.map (fun s -> " " ^ s)
-    |> String.concat ""
-  in
-  let tape_str = left_str ^ tape.current ^ right_str in
-  Printf.sprintf "%s" tape_str
-    
-  (** [run_machine] take the config of a turing machine,
-  places the input string on the tape and runs the turing machine  *)
-  let run_machine (machine : turing_machine) (input : string list) print_steps : string list =
-    let get_action key =
-      match machine.transitions |> List.find_opt (fun (k, _) ->
-        k.state = key.state && k.symbol = key.symbol) with
-      | Some (_, action) -> action
-      | None -> failwith ("No transition defined for state " ^ key.state ^ " and symbol " ^ key.symbol)
-    in
-    
-    let rec compute current_state (tape : tape) output print_steps step_count =
+  add_left tape.left;
+  Buffer.add_string buf tape.current;
+  List.iter (fun s -> Buffer.add_char buf ' '; Buffer.add_string buf s) tape.right;
+  Buffer.contents buf
 
-      if halts current_state machine.finals then
-        let final_tape = output_final_tape tape in
-        List.rev (final_tape :: output) 
-      else
-        let key = {state = current_state; symbol = tape.current} in
-        let action = get_action key in
-       if print_steps && (step_count mod 50000 = 0) then (
-        print_endline (Printf.sprintf "Step %d: State %s" step_count current_state);
-        print_endline (print_tape_and_state tape (key, action));
-        flush stdout;
-    );
-        (* if print_steps then
-        print_endline (print_tape_and_state tape (key, action)); *)
-        let new_output = (print_tape_and_state tape (key, action)) :: output
-          in 
-        let next_tape =
-          {tape with current = action.write} 
-          |> shift_tape machine.blank action.move
-        in
-        compute action.next_state next_tape new_output print_steps (step_count + 1)
-    in
+(* Lightweight Tape (Fast, Use for checkpoints) *)
+(* Shows: ... [200 chars left] >[HEAD]< [200 chars right] ... *)
+let output_debug_tape tape =
+  let buf = Buffer.create 500 in
+  
+  Buffer.add_string buf "... ";
+  
+  (* Left is reversed, so we take 200, then reverse them to print correctly *)
+  let left_part = take 200 tape.left |> List.rev in
+  List.iter (fun s -> Buffer.add_string buf s; Buffer.add_char buf ' ') left_part;
+  
+  Buffer.add_string buf " >[";
+  Buffer.add_string buf tape.current;
+  Buffer.add_string buf "]< ";
+  
+  let right_part = take 200 tape.right in
+  List.iter (fun s -> Buffer.add_string buf s; Buffer.add_char buf ' ') right_part;
+  
+  Buffer.add_string buf " ...";
+  Buffer.contents buf
+
+let save_checkpoint filename tape state step =
+  let oc = open_out filename in
+  Printf.fprintf oc "Step: %d | State: %s\n" step state;
+  (* Use the FAST output function *)
+  Printf.fprintf oc "%s\n" (output_debug_tape tape);
+  close_out oc
+
+(* --- MAIN RUNNER --- *)
+
+let run_machine (machine : turing_machine) (input : string list) print_steps : unit =
+  
+  let rules = Hashtbl.create (List.length machine.transitions) in
+  List.iter (fun (k, action) -> 
+    Hashtbl.add rules (k.state, k.symbol) action
+  ) machine.transitions;
+
+  let get_action current_state current_symbol =
+    Hashtbl.find_opt rules (current_state, current_symbol)
+  in
+  
+  let rec compute current_state (tape : tape) step_count =
     
-    let starting_tape = match input with
-      | [] -> { current = ""; left = []; right = [] }
-      | hd::tl -> { current = hd; left = []; right = tl }
-    in
-    compute machine.initial starting_tape [] print_steps 0
+    (* DEBUG: Initial Proof of Life *)
+    if step_count = 1 then (
+       save_checkpoint "debug_start.txt" tape current_state step_count;
+    );
+
+    (* CHECKPOINT: Now fast enough to run every 1 Million steps *)
+    if step_count > 0 && (step_count mod 1000000 = 0) then (
+       save_checkpoint "checkpoint.txt" tape current_state step_count;
+       Printf.eprintf "\r[Checkpoint @ %dM steps] " (step_count / 1000000);
+       flush stderr
+    );
+
+    if halts current_state machine.finals then (
+      let final_tape = output_final_tape tape in
+      Printf.printf "%s\n" final_tape;
+      flush stdout
+    ) else (
+      match get_action current_state tape.current with
+      | None -> 
+          Printf.eprintf "\n[HALT] Undefined transition (Crash Halt).\n";
+          let final_tape = output_final_tape tape in
+          Printf.printf "%s\n" final_tape;
+          flush stdout
+      | Some action ->
+          let next_tape =
+            {tape with current = action.write} 
+            |> shift_tape machine.blank action.move
+          in
+          compute action.next_state next_tape (step_count + 1)
+    )
+  in
+  
+  let starting_tape = match input with
+    | [] -> { current = ""; left = []; right = [] }
+    | hd::tl -> { current = hd; left = []; right = tl }
+  in
+  compute machine.initial starting_tape 0
