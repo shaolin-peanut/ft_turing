@@ -2,7 +2,7 @@
   "name": "unary_add_forward",
   "alphabet": ["1", ".", "+", "="],
   "blank": ".",
-  "states": ["begin", "scan", "add", "halt"],
+  "states": ["scan", "begin", "add", "halt"],
   "initial": "begin",
   "finals": ["halt"],
   "transitions": {
